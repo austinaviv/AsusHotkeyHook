@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Management;
@@ -106,55 +107,37 @@ internal static class Program
         Application.Exit();
     }
 
-    private static void OnAsusKeyStroke(
-        object sender,
-        EventArrivedEventArgs e)
+    private static void OnAsusKeyStroke(object sender, EventArrivedEventArgs e)
     {
         try
         {
-            object? eventData =
-                e.NewEvent.Properties["EventID"]?.Value;
+            object? eventData = e.NewEvent.Properties["EventID"]?.Value;
 
             if (eventData == null)
                 return;
 
-            if (Convert.ToInt32(eventData) != ASUS_MIC_MUTE_EVENT_ID)
+            int eventId = Convert.ToInt32(eventData);
+
+            string logPath = Path.Combine(
+            AppContext.BaseDirectory,"hotkey.log");
+
+            File.AppendAllText(
+                logPath,
+                $"{DateTime.Now:HH:mm:ss.fff} EventID={eventId}{Environment.NewLine}");
+
+            if (eventId != ASUS_MIC_MUTE_EVENT_ID)
                 return;
 
-            lock (StateLock)
-            {
-                bool currentState =
-                    GetPrimaryHardwareMicMuteState();
+            _isMuted = !_isMuted;
 
-                bool newState = !currentState;
+            SetGlobalHardwareMicMuteState(_isMuted);
 
-                SetGlobalHardwareMicMuteState(newState);
-
-                _isMuted = newState;
-
-                UpdateTrayIcon(newState);
-
-                Thread uiThread = new(() =>
-                {
-                    using CuteOverlayForm form =
-                        new(newState);
-
-                    Application.Run(form);
-                });
-
-                uiThread.SetApartmentState(
-                    ApartmentState.STA);
-
-                uiThread.IsBackground = true;
-                uiThread.Start();
-            }
+            UpdateTrayIcon(_isMuted);
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine(ex);
         }
     }
-
     private static bool GetPrimaryHardwareMicMuteState()
     {
         try

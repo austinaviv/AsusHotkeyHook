@@ -1,23 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-
     <TargetFramework>net10.0-windows</TargetFramework>
-
     <UseWindowsForms>true</UseWindowsForms>
-
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>AsusMicMuteOverlay</AssemblyName>
+    <RootNamespace>AsusHotkeyDetector</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>Asus Mic Mute Overlay</Product>
     <InvariantGlobalization>true</InvariantGlobalization>
-
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
